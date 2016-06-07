@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Sirupsen/logrus"
+	"google.golang.org/grpc"
 )
 
 // httpStatusError is an interface
@@ -55,6 +56,7 @@ func GetHTTPErrorStatusCode(err error) int {
 			"wrong login/password":  http.StatusUnauthorized,
 			"unauthorized":          http.StatusUnauthorized,
 			"hasn't been activated": http.StatusForbidden,
+			"this node":             http.StatusNotAcceptable,
 		} {
 			if strings.Contains(errStr, keyword) {
 				statusCode = status
@@ -78,5 +80,5 @@ func WriteError(w http.ResponseWriter, err error) {
 	}
 
 	statusCode := GetHTTPErrorStatusCode(err)
-	http.Error(w, err.Error(), statusCode)
+	http.Error(w, grpc.ErrorDesc(err), statusCode)
 }
